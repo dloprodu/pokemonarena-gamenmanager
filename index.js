@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 
   // 1. When the client emits 'add user', this listens and add the user
   //    to the list.
-  socket.on('add user', (alias) => {
+  socket.on('sign in', (alias) => {
     if (addedUser) return;
 
     addUserHandler(io, socket, alias, () => { addedUser = true});
@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
 
   // 2. When the client emits 'remove user', this listens and remove the user
   //    from the list.
-  socket.on('remove user', () => {
+  socket.on('sign out', () => {
     if (!addedUser) {
       return;
     }
@@ -104,5 +104,18 @@ io.on('connection', (socket) => {
     }
 
     PlayerList.disconnectBattle(socket);
+
+    io.emit('users', {
+      users: PlayerList.getPlayerListNormalized()
+    });
+  });
+
+  // 8. Whe the client emits 'player ready'
+  socket.on('player ready', (data) => {
+    if (!addedUser || !socket.battlefieldId) {
+      return;
+    }
+
+    socket.in(socket.battlefieldId).emit('opponent ready', data);
   });
 });

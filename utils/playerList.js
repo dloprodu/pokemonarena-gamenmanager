@@ -75,7 +75,9 @@ PlayerList.disconnectBattle = function(socket) {
     return;
   }
 
-  const opponent = battlefieldId.split('-').filter(u => u !== socket.alias);
+  socket.in(battlefieldId).send('opponent disconnected');
+
+  const opponent = battlefieldId.split('-').filter(u => u !== socket.alias)[0];
   const opponentRef = players.find(u => u.alias === opponent);
 
   if (!opponentRef) {
@@ -87,8 +89,6 @@ PlayerList.disconnectBattle = function(socket) {
 
   delete socket.battlefieldId;
   delete opponentRef.battlefieldId;
-
-  opponentRef.send('opponent disconnected');
 }
 
 PlayerList.removeWaitingResponseFromFlag = function(socket) {
