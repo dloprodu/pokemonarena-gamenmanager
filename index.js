@@ -103,6 +103,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-    PlayerList.checkIfUserIsPlayingABattle(socket);
+    PlayerList.disconnectBattle(socket);
   });
 });
