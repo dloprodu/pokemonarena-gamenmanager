@@ -1,6 +1,10 @@
 // Setup basic express server
 const express = require('express');
 const app = express();
+
+const port = normalizePort(process.env.PORT || '3001');
+app.set('port', port);
+
 const path = require('path');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
@@ -19,8 +23,6 @@ const disconnectHandler = require('./handlers/disconnect');
 const playRequestHandler = require('./handlers/playRequest');
 const acceptRequestHandler = require('./handlers/acceptRequest');
 const rejectRequestHandler = require('./handlers/rejectRequest');
-
-const port = process.env.PORT || 3001;
 
 server.listen(port, () => {
   console.log('Server listening at port %d', port);
@@ -119,3 +121,24 @@ io.on('connection', (socket) => {
     socket.in(socket.battlefieldId).emit('opponent ready', data);
   });
 });
+
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+ function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
