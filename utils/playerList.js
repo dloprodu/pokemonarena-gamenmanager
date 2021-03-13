@@ -96,7 +96,7 @@ PlayerList.removeWaitingResponseFromFlag = function(socket) {
     return;
   }
 
-  const user =  players.find(user => user.alias === socket.attendingRequestTo);
+  const user = players.find(user => user.alias === socket.attendingRequestTo);
 
   if (!user) {
     return;
@@ -110,7 +110,7 @@ PlayerList.removeAttendingRequestToFlag = function(socket) {
     return;
   }
 
-  const user =  players.find(user => user.alias === socket.waitingResponseFrom);
+  const user = players.find(user => user.alias === socket.waitingResponseFrom);
 
   if (!user) {
     return;
