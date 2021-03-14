@@ -1,4 +1,5 @@
 const PlayerList = require('../utils/playerList');
+const resetTurnHandler = require('./resetTurn');
 
 function acceptRequestHandler(io, socket, target, doneFn) {
   let user = PlayerList.find(target);
@@ -17,6 +18,8 @@ function acceptRequestHandler(io, socket, target, doneFn) {
   delete user.waitingResponseFrom;
   user.battlefieldId = battlefieldId;
   user.join(battlefieldId);
+
+  resetTurnHandler(io, socket);
 
   user.emit('accepted request', { from: socket.alias });
 

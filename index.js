@@ -23,6 +23,8 @@ const disconnectHandler = require('./handlers/disconnect');
 const playRequestHandler = require('./handlers/playRequest');
 const acceptRequestHandler = require('./handlers/acceptRequest');
 const rejectRequestHandler = require('./handlers/rejectRequest');
+const leaveBattleHandler = require('./handlers/leaveBattle');
+const resetTurnHandler = require('./handlers/resetTurn');
 
 server.listen(port, () => {
   console.log('Server listening at port %d', port);
@@ -105,11 +107,7 @@ io.on('connection', (socket) => {
       return;
     }
 
-    PlayerList.disconnectBattle(socket);
-
-    io.emit('users', {
-      users: PlayerList.getPlayerListNormalized()
-    });
+    leaveBattleHandler(io, socket);
   });
 
   // 8. Whe the client emits 'player ready'
@@ -120,14 +118,31 @@ io.on('connection', (socket) => {
 
     socket.in(socket.battlefieldId).emit('opponent ready', data);
   });
-});
 
+  // 9. When the client emits 'reload battle'
+  socket.on('reload battle', () => {
+    if (!addedUser || !socket.battlefieldId) {
+      return;
+    }
+
+    resetTurnHandler(io, socket);
+    socket.in(socket.battlefieldId).emit('reload battle');
+  });
+
+  // 10. When the client emits 'move'
+  socket.on('move', (index) => {
+    if (!addedUser || !socket.battlefieldId) {
+      return;
+    }
+
+    socket.in(socket.battlefieldId).emit('move', index);
+  });
+});
 
 /**
  * Normalize a port into a number, string, or false.
  */
-
- function normalizePort(val) {
+function normalizePort(val) {
   var port = parseInt(val, 10);
 
   if (isNaN(port)) {
